@@ -143,7 +143,7 @@
                 .then(data => {
                     const rows = data.split('\n');
                     const subjects = rows[0].split(',');
-                    const userGrades = rows[userIndex + 1].split(',');
+                    const userGrades = rows[userIndex].split(',');
 
                     const subjectsRow = document.getElementById('subjectsRow');
                     const gradesRow = document.getElementById('gradesRow');
