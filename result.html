@@ -130,7 +130,6 @@
             }
 
             const regNo = parseInt(username);
-  
 
             const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZk9wExY5WlKpI_aQ8w3mBUQCiATxeZfDq1yleB6d0FIUl8mF2Kd0Ze7xPIsctt2H7dtOxqaSJzyNI/pub?output=csv';
 
@@ -163,10 +162,9 @@
                         subjectsRow.appendChild(th);
                     });
 
-                    userGrades.forEach((grade, index) => {
-                        if (index === 0) return; // Skip the registration number column
+                    subjects.forEach((subject, index) => {
                         const td = document.createElement('td');
-                        td.textContent = grade;
+                        td.textContent = userGrades[index] || '';
                         gradesRow.appendChild(td);
                     });
                 })
