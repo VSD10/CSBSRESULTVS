@@ -129,12 +129,8 @@
                 return;
             }
 
-            const userIndex = parseInt(username.slice(-2), 10);
-            if (userIndex < 1 || userIndex > 59) {
-                alert('Invalid username!');
-                window.location.href = 'login.html';
-                return;
-            }
+            const regNo = parseInt(username);
+  
 
             const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZk9wExY5WlKpI_aQ8w3mBUQCiATxeZfDq1yleB6d0FIUl8mF2Kd0Ze7xPIsctt2H7dtOxqaSJzyNI/pub?output=csv';
 
@@ -143,7 +139,20 @@
                 .then(data => {
                     const rows = data.split('\n');
                     const subjects = rows[0].split(',');
-                    const userGrades = rows[userIndex].split(',');
+                    let userGrades;
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i].split(',');
+                        if (parseInt(row[0]) === regNo) {
+                            userGrades = row;
+                            break;
+                        }
+                    }
+
+                    if (!userGrades) {
+                        alert('User not found!');
+                        return;
+                    }
 
                     const subjectsRow = document.getElementById('subjectsRow');
                     const gradesRow = document.getElementById('gradesRow');
@@ -154,7 +163,8 @@
                         subjectsRow.appendChild(th);
                     });
 
-                    userGrades.forEach(grade => {
+                    userGrades.forEach((grade, index) => {
+                        if (index === 0) return; // Skip the registration number column
                         const td = document.createElement('td');
                         td.textContent = grade;
                         gradesRow.appendChild(td);
