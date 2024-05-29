@@ -17,22 +17,21 @@
         }
         .container {
             text-align: center;
-            margin: 100px;
-            margin-top: 50px;
+            margin: 20px;
             width: 90%;
-            max-width: 800px; /* Adjust max-width as needed */
+            max-width: 800px;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            background-color: rgba(255, 255, 255, 0.8);
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 50px auto;
+            margin: 20px auto;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
             overflow: hidden;
-            background-color: rgba(255, 255, 255, 0.8);
         }
         th, td {
             padding: 15px;
@@ -41,28 +40,35 @@
         }
         th {
             background-color: #0015ff;
-            color: rgb(255, 255, 255);
+            color: white;
             text-transform: uppercase;
             letter-spacing: 0.1em;
         }
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
-        tr:hover {
-            background-color: #e0e0e0;
-        }
         tr:nth-child(odd) {
             background-color: #fff;
         }
-        .table-header {
-            background-color: #FF6F61;
+        .print-button {
+            margin: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0015ff;
             color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
-        .table-footer {
-            background-color: #333;
-            color: white;
+        .print-button:hover {
+            background-color: #000000;
         }
-        /* Media Queries for Mobile Devices */
+        .pass-row {
+            background-color: #00db33;
+        }
+        .fail-row {
+            background-color: #f00518;
+        }
         @media (max-width: 768px) {
             body {
                 height: auto;
@@ -71,7 +77,7 @@
             .container {
                 margin-top: 20px;
                 width: 100%;
-                max-width: none; /* Adjust for full width on smaller screens */
+                max-width: none;
                 border-radius: 0;
             }
             table {
@@ -87,31 +93,21 @@
                 font-size: 14px;
             }
         }
-        .print-button {
-            margin: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #0015ff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .print-button:hover {
-            background-color: #000000;
-        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1 style="color: #e0e0e0;">DEPARTMENT OF COMPUTER SCIENCE AND BUSINESS SYSTEMS</h1>
-        <h2 style="color: wheat;">Student Grade</h2>
+        <h1>DEPARTMENT OF COMPUTER SCIENCE AND BUSINESS SYSTEMS</h1>
+        <h2 style="color: #0011fe;">Student Grade</h2>
+        <div id="studentInfo"></div>
         <table id="resultsTable">
             <thead class="table-header">
-                <tr id="subjectsRow"></tr>
+                <tr>
+                    <th>Subject</th>
+                    <th>Grade</th>
+                </tr>
             </thead>
-            <tbody>
-                <tr id="gradesRow"></tr>
+            <tbody id="resultsBody">
             </tbody>
         </table>
         <button class="print-button" onclick="downloadPDF()">Download Your Results</button>
@@ -130,7 +126,6 @@
             }
 
             const regNo = parseInt(username);
-
             const sheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQZk9wExY5WlKpI_aQ8w3mBUQCiATxeZfDq1yleB6d0FIUl8mF2Kd0Ze7xPIsctt2H7dtOxqaSJzyNI/pub?output=csv';
 
             fetch(sheetUrl)
@@ -139,11 +134,13 @@
                     const rows = data.split('\n');
                     const subjects = rows[0].split(',');
                     let userGrades;
+                    let studentName = "Student Name"; // Default in case no name is found
 
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i].split(',');
                         if (parseInt(row[0]) === regNo) {
                             userGrades = row;
+                            studentName = row[1]; // Assuming the second column is the student's name
                             break;
                         }
                     }
@@ -153,19 +150,28 @@
                         return;
                     }
 
-                    const subjectsRow = document.getElementById('subjectsRow');
-                    const gradesRow = document.getElementById('gradesRow');
+                    document.getElementById('studentInfo').innerHTML = `<h2>Registration Number: ${regNo}</h2>`;
 
-                    subjects.forEach(subject => {
-                        const th = document.createElement('th');
-                        th.textContent = subject;
-                        subjectsRow.appendChild(th);
-                    });
-
+                    const resultsBody = document.getElementById('resultsBody');
                     subjects.forEach((subject, index) => {
-                        const td = document.createElement('td');
-                        td.textContent = userGrades[index] || '';
-                        gradesRow.appendChild(td);
+                        if (index < 2) return; // Skip the registration number and name columns
+                        const tr = document.createElement('tr');
+                        const subjectTd = document.createElement('td');
+                        const gradeTd = document.createElement('td');
+
+                        subjectTd.textContent = subject;
+                        gradeTd.textContent = userGrades[index] || '';
+
+                        tr.appendChild(subjectTd);
+                        tr.appendChild(gradeTd);
+
+                        if (subjects[index].toLowerCase() === "result" && gradeTd.textContent.toLowerCase() === "pass") {
+                            tr.classList.add('pass-row');
+                        } else if (subjects[index].toLowerCase() === "result" && gradeTd.textContent.toLowerCase() !== "pass") {
+                            tr.classList.add('fail-row');
+                        }
+
+                        resultsBody.appendChild(tr);
                     });
                 })
                 .catch(error => {
@@ -176,12 +182,7 @@
 
         function downloadPDF() {
             const { jsPDF } = window.jspdf;
-            const doc = new jsPDF('landscape', 'mm', 'a1');
-
-            // Set custom margins to account for the table header
-            doc.setProperties({
-                margin: [40, 30, 50, 20]
-            });
+            const doc = new jsPDF('portrait', 'mm', 'a3');
 
             // Add department and student grade text
             const departmentText = 'DEPARTMENT OF COMPUTER SCIENCE AND BUSINESS SYSTEMS';
@@ -189,24 +190,27 @@
 
             doc.setFontSize(20);
             doc.setTextColor('#000000');
-            doc.text(departmentText, 105, 15, { align: 'center' });
+            doc.text(departmentText, doc.internal.pageSize.getWidth() / 2, 15, { align: 'center' });
             doc.setTextColor('#000000');
-            doc.text(gradeText, 105, 25, { align: 'center' });
+            doc.text(gradeText, doc.internal.pageSize.getWidth() / 2, 25, { align: 'center' });
+
+            // Add student info
+            const studentInfo = document.getElementById('studentInfo').innerText;
+            doc.setFontSize(16);
+            doc.setTextColor('#000000');
+            doc.text(studentInfo, doc.internal.pageSize.getWidth() / 2, 35, { align: 'center' });
 
             doc.autoTable({
                 html: '#resultsTable',
-                startY: 40,
+                startY: 50,
                 theme: 'grid',
                 headStyles: {
-                    fillColor: [76, 175, 80],
+                    fillColor: [0, 21, 255],
                     textColor: 255,
                     halign: 'center'
                 },
                 bodyStyles: {
                     halign: 'center'
-                },
-                columnStyles: {
-                    0: { cellWidth: 'auto' }, // Set the first column width to 'auto' for auto-sizing
                 },
                 styles: {
                     overflow: 'linebreak',
@@ -214,17 +218,6 @@
                     fontSize: 10
                 }
             });
-
-            // Set document size to A3
-            const pageSize = doc.internal.pageSize;
-            const pageWidth = pageSize.width;
-            const pageHeight = pageSize.height;
-            const contentHeight = doc.autoTable.previous.finalY + 10; // Final Y position of the table + padding
-
-            // Check if content height exceeds page height
-            if (contentHeight > pageHeight) {
-                doc.addPage();
-            }
 
             doc.save('result.pdf');
         }
