@@ -5,7 +5,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url('abstract-blur-defocused-bookshelf-library.jpg'); /* Replace 'your-image-url.jpg' with the actual URL of your background image */
+            background: url('abstract-grey-geometric-background3-o.avif');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -15,19 +15,22 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            
+        }
+        .header-image {
+            width: 1024px;
+            height: 134px;
         }
         .department {
-            font-size: 45px;
-            
-            font-weight:400;
-            margin-bottom: 40px;
+            padding-top: 40px;
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 25px;
+            font-weight: bold;
+            margin-bottom: 0;
             text-align: center;
             color: rgb(0, 0, 0);
-            text-shadow: 3px 2px 20px rgba(0, 0, 0, 0.984);
         }
         .login-container {
-            background-color: rgba(255, 255, 255, 0.8);
+            background-color: rgb(236, 232, 217);
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             border-radius: 5px;
@@ -55,7 +58,7 @@
             cursor: pointer;
         }
         .login-container button:hover {
-            background-color: #f70101;
+            background-color: #439f19;
         }
         @media (max-width: 600px) {
             .login-container {
@@ -73,16 +76,21 @@
                 font-size: 24px;
                 margin-top: 30px;
             }
+            .header-image {
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
 <body>
+    <img src="Asset-8-1024x136.png" alt="Knowledge Institute of Technology" class="header-image">
     <div class="department">DEPARTMENT OF COMPUTER SCIENCE AND BUSINESS SYSTEMS</div>
-    <div class="department">RESULT PORTAL</div>
+    <div class="department"></div>
     <div class="login-container">
-        <h2>Login</h2>
+        <h2>STUDENT LOGIN</h2>
         <form onsubmit="login(); return false;" autocomplete="off">
-            <input type="text" id="username" placeholder="Enter your username (e.g., 611222244001)" autocomplete="off">
+            <input type="text" id="username" placeholder="Enter your Register Number (e.g., 611222244001)" autocomplete="off">
             <input type="password" id="password" placeholder="Enter your password" autocomplete="off">
             <button type="submit">Login</button>
         </form>
